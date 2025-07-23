@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jharkhand Government Digital Assistant | सरकारी सहायक</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Jharkhand Government Digital Assistant | झारखंड सरकार डिजिटल सहायक</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,22 +12,32 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-orange: #FF9933;
+            --primary-green: #138808;
+            --background-gradient: linear-gradient(135deg, #FF9933 0%, #FFFFFF 35%, #138808 100%);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-strong: 0 20px 40px rgba(0, 0, 0, 0.15);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+        }
+
         body {
-            font-family: 'Inter', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #ff9933 0%, #ffffff 50%, #138808 100%);
+            font-family: 'Inter', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+            background: var(--background-gradient);
+            background-attachment: fixed;
             min-height: 100vh;
-            color: #333;
+            color: var(--text-primary);
             overflow-x: hidden;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* Header Styles */
         .header {
             position: fixed;
             top: 0;
@@ -36,37 +46,46 @@
             z-index: 1000;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 153, 51, 0.2);
-            animation: slideDown 0.8s ease-out;
+            border-bottom: 1px solid var(--glass-border);
+            animation: slideDownFade 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .header-content {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 15px 20px;
+            padding: 20px;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .logo-title-group {
+            display: flex;
+            align-items: center;
             gap: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 153, 51, 0.2);
         }
 
         .logo {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             object-fit: cover;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            animation: pulse 3s infinite;
-            border: 3px solid #ff9933;
+            border: 3px solid var(--primary-orange);
+            box-shadow: 0 8px 25px rgba(255, 153, 51, 0.3);
+            transition: all 0.3s ease;
+            animation: logoFloat 6s ease-in-out infinite;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(255, 153, 51, 0.4);
         }
 
         .title-section {
@@ -74,62 +93,51 @@
         }
 
         .title {
-            color: #2d3748;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 3px;
-            background: linear-gradient(45deg, #ff9933, #138808);
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-orange), var(--primary-green));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            margin-bottom: 4px;
+            letter-spacing: -0.025em;
         }
 
         .title-hindi {
-            color: #4a5568;
             font-size: 1.1rem;
             font-weight: 600;
+            color: var(--text-secondary);
             font-family: 'Noto Sans Devanagari', sans-serif;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         .subtitle {
-            color: #666;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
             font-weight: 500;
         }
 
-        .main-content {
-            flex: 1;
+        .language-selector {
             display: flex;
-            flex-direction: column;
-            margin-top: 140px; /* Space for fixed header */
-            margin-bottom: 100px; /* Space for fixed footer */
-            padding: 0 20px;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
         }
 
-        .chat-container {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            animation: slideUp 0.8s ease-out 0.2s both;
-            border: 1px solid rgba(255, 153, 51, 0.2);
-        }
-
-        .chat-header {
-            background: linear-gradient(135deg, #ff9933, #ff8c00);
-            color: white;
-            padding: 20px;
-            text-align: center;
+        .language-option {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
 
-        .chat-header::before {
+        .language-option::before {
             content: '';
             position: absolute;
             top: 0;
@@ -137,72 +145,115 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 4s infinite;
+            transition: left 0.5s;
         }
 
-        .chat-header h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
+        .language-option:hover::before {
+            left: 100%;
+        }
+
+        .language-option:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .language-option.active {
+            background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.3);
+        }
+
+        /* Subheader Styles */
+        .subheader {
+            position: fixed;
+            top: 120px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+            color: white;
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 153, 51, 0.3);
+            animation: slideDownFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        .subheader::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: shimmerRotate 8s linear infinite;
+        }
+
+        .subheader-content {
             position: relative;
             z-index: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
         .status-indicator {
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #4ade80;
+            background: #10b981;
             animation: pulse 2s infinite;
-            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
-        .language-selector {
+        .subheader h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        /* Main Content */
+        .container {
+            height: 100vh;
             display: flex;
-            justify-content: center;
-            gap: 12px;
-            padding: 18px;
-            background: linear-gradient(135deg, rgba(255, 153, 51, 0.05), rgba(19, 136, 8, 0.05));
-            border-bottom: 1px solid rgba(255, 153, 51, 0.1);
+            flex-direction: column;
+            padding: 0 20px;
         }
 
-        .language-option {
-            padding: 10px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            background: white;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            font-size: 14px;
+        .main-content {
+            flex: 1;
+            margin-top: 180px;
+            margin-bottom: 100px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .language-option:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-            border-color: #ff9933;
+        .chat-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-strong);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: containerFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
         }
 
-        .language-option.active {
-            background: linear-gradient(135deg, #ff9933, #ff8c00);
-            color: white;
-            border-color: #ff9933;
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(255, 153, 51, 0.3);
-        }
-
+        /* Messages Area */
         .chat-messages {
             flex: 1;
-            padding: 25px;
+            padding: 30px;
             overflow-y: auto;
-            background: linear-gradient(180deg, rgba(248, 249, 250, 0.3) 0%, rgba(255, 255, 255, 0.9) 100%);
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%);
             scrollbar-width: thin;
-            scrollbar-color: #cbd5e0 #f7fafc;
-            min-height: 400px;
+            scrollbar-color: var(--primary-orange) transparent;
         }
 
         .chat-messages::-webkit-scrollbar {
@@ -210,89 +261,166 @@
         }
 
         .chat-messages::-webkit-scrollbar-track {
-            background: #f7fafc;
-            border-radius: 3px;
+            background: transparent;
         }
 
         .chat-messages::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #ff9933, #138808);
+            background: linear-gradient(180deg, var(--primary-orange), var(--primary-green));
             border-radius: 3px;
         }
 
-        .message {
-            margin-bottom: 20px;
-            max-width: 75%;
-            position: relative;
-            animation: messageSlide 0.6s ease-out;
-            clear: both;
+        /* Welcome Message */
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: welcomeFadeIn 1.2s ease-out 1s both;
         }
 
-        .message-bubble {
-            padding: 16px 20px;
-            border-radius: 18px;
-            word-wrap: break-word;
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(255, 153, 51, 0.1), rgba(19, 136, 8, 0.1));
+            border: 2px solid rgba(255, 153, 51, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .welcome-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .welcome-title-hindi {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            margin-bottom: 15px;
+        }
+
+        .welcome-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-orange);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .feature-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Message Bubbles */
+        .message {
+            margin-bottom: 24px;
+            max-width: 80%;
             position: relative;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-            line-height: 1.5;
+            clear: both;
         }
 
         .user-message {
             float: right;
-            transform: translateX(100px);
-            animation: slideInRight 0.6s ease-out forwards;
+            animation: messageSlideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .bot-message {
+            float: left;
+            animation: messageSlideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .message-bubble {
+            padding: 18px 22px;
+            border-radius: 20px;
+            word-wrap: break-word;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .message-bubble:hover {
+            transform: translateY(-1px);
         }
 
         .user-message .message-bubble {
-            background: linear-gradient(135deg, #ff9933, #ff8c00);
+            background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
             color: white;
             border-bottom-right-radius: 6px;
+            box-shadow: 0 4px 20px rgba(255, 153, 51, 0.3);
             margin-left: auto;
         }
 
         .user-message .message-bubble::after {
             content: '';
             position: absolute;
-            right: -8px;
+            right: -10px;
             bottom: 8px;
             width: 0;
             height: 0;
-            border-left: 8px solid #ff8c00;
+            border-left: 10px solid #ff8c00;
             border-top: 8px solid transparent;
             border-bottom: 8px solid transparent;
         }
 
-        .bot-message {
-            float: left;
-            transform: translateX(-100px);
-            animation: slideInLeft 0.6s ease-out forwards;
-        }
-
         .bot-message .message-bubble {
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            color: #2d3748;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-primary);
             border-bottom-left-radius: 6px;
-            border: 1px solid rgba(255, 153, 51, 0.1);
+            border: 1px solid rgba(255, 153, 51, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .bot-message .message-bubble::after {
             content: '';
             position: absolute;
-            left: -8px;
+            left: -10px;
             bottom: 8px;
             width: 0;
             height: 0;
-            border-right: 8px solid #ffffff;
+            border-right: 10px solid rgba(255, 255, 255, 0.95);
             border-top: 8px solid transparent;
             border-bottom: 8px solid transparent;
         }
 
         .message-info {
-            font-size: 12px;
-            color: #64748b;
+            font-size: 0.75rem;
+            color: var(--text-muted);
             margin-top: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 500;
         }
 
         .user-message .message-info {
@@ -307,15 +435,86 @@
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #ff9933, #138808);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 12px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
+        .user-message .avatar {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .bot-message .avatar {
+            background: linear-gradient(135deg, var(--primary-orange), var(--primary-green));
+            color: white;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            float: left;
+            clear: both;
+            margin-bottom: 24px;
+            animation: messageSlideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .typing-bubble {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 153, 51, 0.2);
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 200px;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .typing-bubble::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            bottom: 8px;
+            width: 0;
+            height: 0;
+            border-right: 10px solid rgba(255, 255, 255, 0.95);
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        .typing-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-orange);
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0s; }
+
+        .typing-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Input Area */
         .chat-input-container {
             position: fixed;
             bottom: 0;
@@ -324,57 +523,78 @@
             z-index: 1000;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 153, 51, 0.2);
+            border-top: 1px solid var(--glass-border);
         }
 
         .chat-input {
-            max-width: 1000px;
-            margin: 0 auto;
             display: flex;
-            padding: 20px;
-            gap: 15px;
+            padding: 24px;
+            gap: 16px;
+            align-items: flex-end;
         }
 
         #message-input {
             flex: 1;
             padding: 16px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
+            border: none;
+            border-radius: 24px;
             outline: none;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: white;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 1rem;
+            line-height: 1.5;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            resize: none;
+            min-height: 24px;
+            max-height: 120px;
+            font-family: inherit;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         #message-input:focus {
-            border-color: #ff9933;
-            box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.05);
-            transform: scale(1.01);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(255, 153, 51, 0.1), 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
         }
 
         #message-input::placeholder {
-            color: #94a3b8;
+            color: var(--text-muted);
         }
 
         #send-button {
-            background: linear-gradient(135deg, #138808, #0d6806);
+            background: linear-gradient(135deg, var(--primary-green), #0d6806);
             color: white;
             border: none;
-            padding: 16px 28px;
-            border-radius: 25px;
+            padding: 16px 24px;
+            border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.95rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 15px rgba(19, 136, 8, 0.3);
             position: relative;
             overflow: hidden;
-            font-size: 16px;
+            min-width: 100px;
+        }
+
+        #send-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        #send-button:hover::before {
+            left: 100%;
         }
 
         #send-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(19, 136, 8, 0.4);
+            box-shadow: 0 8px 25px rgba(19, 136, 8, 0.4);
         }
 
         #send-button:active {
@@ -387,126 +607,11 @@
             transform: none;
         }
 
-        .typing-indicator {
-            display: none;
-            float: left;
-            clear: both;
-            margin-bottom: 20px;
-            animation: slideInLeft 0.5s ease-out;
-        }
-
-        .typing-bubble {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-radius: 18px;
-            border-bottom-left-radius: 6px;
-            padding: 16px 20px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 153, 51, 0.1);
-            max-width: 200px;
-        }
-
-        .typing-bubble::after {
-            content: '';
-            position: absolute;
-            left: -8px;
-            bottom: 8px;
-            width: 0;
-            height: 0;
-            border-right: 8px solid #f8f9fa;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ff9933;
-            animation: typingBounce 1.4s infinite ease-in-out;
-        }
-
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        .typing-dot:nth-child(3) { animation-delay: 0; }
-
-        .typing-text {
-            margin-left: 12px;
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        .welcome-message {
-            text-align: center;
-            margin: 30px 0;
-            animation: fadeIn 1s ease-out 1s both;
-        }
-
-        .welcome-card {
-            background: linear-gradient(135deg, rgba(255, 153, 51, 0.1), rgba(19, 136, 8, 0.1));
-            border: 2px solid rgba(255, 153, 51, 0.2);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px auto;
-            max-width: 600px;
-        }
-
-        .welcome-title {
-            color: #2d3748;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .welcome-title-hindi {
-            color: #4a5568;
-            font-size: 1.1rem;
-            font-weight: 500;
-            font-family: 'Noto Sans Devanagari', sans-serif;
-            margin-bottom: 15px;
-        }
-
-        .welcome-text {
-            color: #64748b;
-            line-height: 1.6;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .feature {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #ff9933;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .feature-title {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 5px;
-        }
-
-        .feature-text {
-            font-size: 14px;
-            color: #64748b;
-        }
-
         /* Animations */
-        @keyframes slideDown {
+        @keyframes slideDownFade {
             from {
                 opacity: 0;
-                transform: translateY(-50px);
+                transform: translateY(-30px);
             }
             to {
                 opacity: 1;
@@ -514,10 +619,43 @@
             }
         }
 
-        @keyframes slideUp {
+        @keyframes containerFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(50px);
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes messageSlideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes messageSlideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes welcomeFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -525,39 +663,23 @@
             }
         }
 
-        @keyframes slideInRight {
-            to {
-                transform: translateX(0);
-                opacity: 1;
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0);
             }
-        }
-
-        @keyframes slideInLeft {
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes messageSlide {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
+            50% {
+                transform: translateY(-3px);
             }
         }
 
         @keyframes pulse {
             0%, 100% {
-                transform: scale(1);
                 opacity: 1;
+                transform: scale(1);
             }
             50% {
-                transform: scale(1.05);
                 opacity: 0.8;
+                transform: scale(1.1);
             }
         }
 
@@ -572,101 +694,121 @@
             }
         }
 
-        @keyframes shimmer {
+        @keyframes shimmerRotate {
             0% {
-                left: -100%;
+                transform: rotate(0deg);
             }
             100% {
-                left: 100%;
+                transform: rotate(360deg);
             }
         }
 
-        @keyframes fadeIn {
+        @keyframes typewriter {
             from {
-                opacity: 0;
-                transform: translateY(20px);
+                width: 0;
             }
             to {
-                opacity: 1;
-                transform: translateY(0);
+                width: 100%;
             }
         }
 
-        .typing-bubble {
-            position: relative;
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
             .main-content {
-                margin-top: 120px;
+                margin-top: 160px;
                 margin-bottom: 90px;
-                padding: 0 15px;
             }
-            
+
+            .subheader {
+                top: 100px;
+            }
+
             .header-content {
-                padding: 10px 15px;
+                padding: 16px;
             }
-            
+
+            .logo-container {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+                padding: 16px;
+            }
+
+            .logo-title-group {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
             .title {
-                font-size: 1.4rem;
+                font-size: 1.6rem;
             }
-            
+
             .title-hindi {
                 font-size: 1rem;
             }
-            
-            .logo {
-                width: 50px;
-                height: 50px;
+
+            .language-selector {
+                order: -1;
             }
-            
-            .logo-container {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-                padding: 12px;
+
+            .subheader h2 {
+                font-size: 1.1rem;
             }
-            
-            .title-section {
-                text-align: center;
+
+            .chat-messages {
+                padding: 20px;
             }
-            
+
             .message {
                 max-width: 90%;
             }
-            
+
             .message-bubble {
-                padding: 14px 16px;
+                padding: 14px 18px;
+                font-size: 0.9rem;
             }
-            
-            .language-selector {
-                flex-wrap: wrap;
-                gap: 10px;
-                padding: 12px;
-            }
-            
-            .language-option {
-                padding: 8px 18px;
-                font-size: 13px;
-            }
-            
+
             .features {
                 grid-template-columns: 1fr;
-            }
-            
-            .chat-input {
-                padding: 15px;
                 gap: 12px;
             }
-            
+
+            .chat-input {
+                padding: 16px;
+                gap: 12px;
+            }
+
             #message-input {
                 padding: 14px 18px;
-                font-size: 15px;
+                font-size: 0.95rem;
             }
-            
+
             #send-button {
-                padding: 14px 24px;
-                font-size: 15px;
+                padding: 14px 20px;
+                font-size: 0.9rem;
+                min-width: 80px;
+            }
+
+            .welcome-card {
+                padding: 24px;
+            }
+
+            .welcome-title {
+                font-size: 1.3rem;
+            }
+
+            .welcome-title-hindi {
+                font-size: 1.1rem;
             }
         }
 
@@ -675,59 +817,75 @@
             display: table;
             clear: both;
         }
+
+        /* Typewriter effect for bot responses */
+        .typewriter {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid var(--primary-orange);
+            animation: typewriter 2s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            from, to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: var(--primary-orange);
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
             <div class="logo-container">
-            <img src="{{ url_for('static', path='images/images.png') }}" alt="Jharkhand Government Logo" class="logo">
-
-                <div class="title-section">
-                    <h1 class="title">Jharkhand Government</h1>
-                    <p class="title-hindi">झारखंड सरकार</p>
-                    <p class="subtitle">Digital Information Assistant | डिजिटल सूचना सहायक</p>
+                <div class="logo-title-group">
+                    <img src="{{ url_for('static', path='images/images.png') }}" alt="Jharkhand Government Logo" class="logo">
+                    <div class="title-section">
+                        <h1 class="title">Jharkhand Government</h1>
+                        <p class="title-hindi">झारखंड सरकार</p>
+                        <p class="subtitle">Digital Information Assistant | डिजिटल सूचना सहायक</p>
+                    </div>
+                </div>
+                <div class="language-selector">
+                    <div class="language-option active" data-lang="english">🇮🇳 English</div>
+                    <div class="language-option" data-lang="hindi">🇮🇳 हिंदी</div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="subheader">
+        <div class="subheader-content">
+            <div class="status-indicator"></div>
+            <h2>🏛️ Government Assistant | सरकारी सहायक</h2>
         </div>
     </div>
 
     <div class="container">
         <div class="main-content">
             <div class="chat-container">
-                <div class="chat-header">
-                    <div class="status-indicator"></div>
-                    <h2>
-                        <span>🏛️ Government Assistant</span>
-                        <span style="font-size: 1rem; opacity: 0.9;">| सरकारी सहायक</span>
-                    </h2>
-                </div>
-                
-                <div class="language-selector">
-                    <div class="language-option active" data-lang="english">🇮🇳 English</div>
-                    <div class="language-option" data-lang="hindi">🇮🇳 हिंदी</div>
-                </div>
-                
                 <div class="chat-messages" id="chat-messages">
                     <div class="welcome-message">
                         <div class="welcome-card">
                             <h3 class="welcome-title">Welcome to Jharkhand Government Digital Assistant</h3>
                             <p class="welcome-title-hindi">झारखंड सरकार डिजिटल सहायक में आपका स्वागत है</p>
                             <p class="welcome-text">
-                                Get instant access to government information, schemes, and services. Ask me any question about government policies, documents, or procedures.
+                                Get instant access to government information, schemes, and services. Ask me any question about government policies, documents, or procedures in both English and Hindi.
                             </p>
                             <div class="features">
                                 <div class="feature">
                                     <div class="feature-title">📋 Government Schemes</div>
-                                    <div class="feature-text">Information about various government schemes and benefits</div>
+                                    <div class="feature-text">Comprehensive information about various government schemes and benefits</div>
                                 </div>
                                 <div class="feature">
                                     <div class="feature-title">📄 Document Search</div>
-                                    <div class="feature-text">Find relevant government documents and files</div>
+                                    <div class="feature-text">Find relevant government documents and files instantly</div>
                                 </div>
                                 <div class="feature">
-                                    <div class="feature-title">🏛️ Department Info</div>
-                                    <div class="feature-text">Details about government departments and services</div>
+                                    <div class="feature-title">🏛️ Department Information</div>
+                                    <div class="feature-text">Details about government departments and their services</div>
                                 </div>
                                 <div class="feature">
                                     <div class="feature-title">🌐 Bilingual Support</div>
@@ -739,7 +897,7 @@
                     
                     <div class="typing-indicator" id="typing-indicator">
                         <div class="typing-bubble">
-                            <div style="display: flex; align-items: center;">
+                            <div class="typing-content">
                                 <div class="typing-dots">
                                     <div class="typing-dot"></div>
                                     <div class="typing-dot"></div>
@@ -756,7 +914,11 @@
 
     <div class="chat-input-container">
         <div class="chat-input">
-            <input type="text" id="message-input" placeholder="Ask about government schemes, documents, or services..." autocomplete="off">
+            <textarea 
+                id="message-input" 
+                placeholder="Ask about government schemes, documents, or services..." 
+                rows="1"
+                autocomplete="off"></textarea>
             <button id="send-button">
                 <span>Send | भेजें</span>
             </button>
@@ -773,7 +935,13 @@
             
             let currentLanguage = 'english';
             let messageCount = 0;
-            
+
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
             // Handle language selection
             languageOptions.forEach(option => {
                 option.addEventListener('click', function() {
@@ -781,28 +949,33 @@
                     this.classList.add('active');
                     currentLanguage = this.getAttribute('data-lang');
                     
-                    // Update placeholder and messages based on language
-                    if (currentLanguage === 'hindi') {
-                        messageInput.placeholder = "सरकारी योजनाओं, दस्तावेजों या सेवाओं के बारे में पूछें...";
-                        typingIndicator.querySelector('.typing-text').textContent = "सहायक प्रक्रिया कर रहा है...";
-                        sendButton.querySelector('span').textContent = "भेजें";
-                    } else {
-                        messageInput.placeholder = "Ask about government schemes, documents, or services...";
-                        typingIndicator.querySelector('.typing-text').textContent = "Assistant is processing...";
-                        sendButton.querySelector('span').textContent = "Send | भेजें";
-                    }
+                    updateLanguage();
                 });
             });
+
+            function updateLanguage() {
+                if (currentLanguage === 'hindi') {
+                    messageInput.placeholder = "सरकारी योजनाओं, दस्तावेजों या सेवाओं के बारे में पूछें...";
+                    typingIndicator.querySelector('.typing-text').textContent = "सहायक प्रक्रिया कर रहा है...";
+                    sendButton.querySelector('span').textContent = "भेजें";
+                } else {
+                    messageInput.placeholder = "Ask about government schemes, documents, or services...";
+                    typingIndicator.querySelector('.typing-text').textContent = "Assistant is processing...";
+                    sendButton.querySelector('span').textContent = "Send | भेजें";
+                }
+            }
             
-            // Function to add a message to the chat with animation
             function addMessage(text, isUser) {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message', isUser ? 'user-message' : 'bot-message');
                 
                 const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 
+                // Format text with proper line breaks
+                const formattedText = text.replace(/\n/g, '<br>');
+                
                 messageDiv.innerHTML = `
-                    <div class="message-bubble">${text}</div>
+                    <div class="message-bubble">${formattedText}</div>
                     <div class="message-info">
                         ${isUser ? 
                             `<span>You</span><div class="avatar">U</div><span>${currentTime}</span>` : 
@@ -821,24 +994,96 @@
                 const clearDiv = document.createElement('div');
                 clearDiv.className = 'clearfix';
                 chatMessages.appendChild(clearDiv);
+
+                return messageDiv;
+            }
+
+            function addTypingMessage(text, isUser = false) {
+                if (isUser) {
+                    return addMessage(text, true);
+                }
+
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'bot-message');
                 
-                // Smooth scroll to bottom
-                setTimeout(() => {
-                    chatMessages.scrollTo({
-                        top: chatMessages.scrollHeight,
-                        behavior: 'smooth'
-                    });
-                }, 100);
+                const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                messageDiv.innerHTML = `
+                    <div class="message-bubble">
+                        <span id="typing-text"></span>
+                    </div>
+                    <div class="message-info">
+                        <div class="avatar">🏛️</div><span>Government Assistant</span><span>${currentTime}</span>
+                    </div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                
+                // Add clearfix after each message
+                const clearDiv = document.createElement('div');
+                clearDiv.className = 'clearfix';
+                chatMessages.appendChild(clearDiv);
+
+                // Start typing animation
+                const typingTextElement = messageDiv.querySelector('#typing-text');
+                typeText(typingTextElement, text, 50);
+
+                return messageDiv;
+            }
+
+            function typeText(element, text, speed = 50) {
+                let i = 0;
+                element.innerHTML = '';
+                
+                function typeChar() {
+                    if (i < text.length) {
+                        if (text.charAt(i) === '\n') {
+                            element.innerHTML += '<br>';
+                        } else {
+                            element.innerHTML += text.charAt(i);
+                        }
+                        i++;
+                        
+                        // Auto scroll during typing
+                        autoScrollToBottom();
+                        
+                        setTimeout(typeChar, speed);
+                    }
+                }
+                
+                typeChar();
+            }
+
+            function autoScrollToBottom() {
+                const container = chatMessages;
+                const scrollHeight = container.scrollHeight;
+                const clientHeight = container.clientHeight;
+                const scrollTop = scrollHeight - clientHeight - 50; // 50px above input area
+                
+                container.scrollTo({
+                    top: scrollTop,
+                    behavior: 'smooth'
+                });
             }
             
-            // Enhanced typing animation
             function showTypingIndicator() {
+                // Remove existing typing indicator from DOM
+                if (typingIndicator.parentNode) {
+                    typingIndicator.parentNode.removeChild(typingIndicator);
+                }
+                
+                // Insert typing indicator after the last message
+                const lastMessage = chatMessages.querySelector('.message:last-of-type');
+                if (lastMessage && lastMessage.nextSibling) {
+                    chatMessages.insertBefore(typingIndicator, lastMessage.nextSibling);
+                } else {
+                    chatMessages.appendChild(typingIndicator);
+                }
+                
                 typingIndicator.style.display = 'block';
+                
                 setTimeout(() => {
-                    chatMessages.scrollTo({
-                        top: chatMessages.scrollHeight,
-                        behavior: 'smooth'
-                    });
+                    autoScrollToBottom();
                 }, 100);
             }
             
@@ -846,7 +1091,6 @@
                 typingIndicator.style.display = 'none';
             }
             
-            // Function to send message to the server
             async function sendMessage() {
                 const message = messageInput.value.trim();
                 if (!message) return;
@@ -859,8 +1103,9 @@
                 // Add user message to chat
                 addMessage(message, true);
                 messageInput.value = '';
+                messageInput.style.height = 'auto';
                 
-                // Show enhanced typing indicator
+                // Show typing indicator
                 showTypingIndicator();
                 
                 try {
@@ -879,10 +1124,10 @@
                     
                     const data = await response.json();
                     
-                    // Hide typing indicator and add bot response
+                    // Hide typing indicator and add bot response with typing animation
                     hideTypingIndicator();
                     setTimeout(() => {
-                        addMessage(data.response, false);
+                        addTypingMessage(data.response, false);
                     }, 300);
                 } catch (error) {
                     hideTypingIndicator();
@@ -890,7 +1135,7 @@
                         const errorMsg = currentLanguage === 'hindi' 
                             ? "खुशफहमी, आपके अनुरोध को संसाधित करने में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।"
                             : "Sorry, there was an error processing your request. Please try again later.";
-                        addMessage(errorMsg, false);
+                        addTypingMessage(errorMsg, false);
                     }, 300);
                     console.error('Error:', error);
                 } finally {
@@ -905,7 +1150,8 @@
             
             // Send message when Enter key is pressed
             messageInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !sendButton.disabled) {
+                if (e.key === 'Enter' && !e.shiftKey && !sendButton.disabled) {
+                    e.preventDefault();
                     sendMessage();
                 }
             });
@@ -929,7 +1175,7 @@
                 const welcomeMsg = currentLanguage === 'hindi' 
                     ? "नमस्ते! मैं झारखंड सरकार का डिजिटल सहायक हूँ। मैं आपको सरकारी योजनाओं, दस्तावेजों और सेवाओं के बारे में जानकारी प्रदान कर सकता हूँ। आप मुझसे कुछ भी पूछ सकते हैं।"
                     : "Hello! I'm the Jharkhand Government Digital Assistant. I can help you find information about government schemes, documents, and services. Feel free to ask me anything!";
-                addMessage(welcomeMsg, false);
+                addTypingMessage(welcomeMsg, false);
             }, 2500);
         });
     </script>
