@@ -11,10 +11,7 @@ import json
 from pydantic import BaseModel
 import re
 
-# Load environment variables
-load_dotenv()
 
-# Configure Gemini API
 # Load environment variables
 load_dotenv()
 
