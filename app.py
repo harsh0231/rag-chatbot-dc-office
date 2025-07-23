@@ -13,6 +13,7 @@ import re
 
 # Load environment variables
 load_dotenv()
+print("DEBUG - DB_USER:", os.getenv('DB_USER'))
 
 # Configure Gemini API
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -27,11 +28,15 @@ templates = Jinja2Templates(directory="templates")
 
 # MySQL Configuration
 MYSQL_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'root',
-    'database': 'ranchi'
+    'host': os.getenv('DB_HOST'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'database': os.getenv('DB_NAME'),
+    'use_pure': True
 }
+
+
+
 
 # Load your metadata (could also be stored in MySQL)
 with open('metadata.json', 'r', encoding='utf-8') as f:
@@ -129,14 +134,14 @@ def find_relevant_files(user_query: str, language: str = "english") -> List[int]
     if language.lower() == "hindi":
         system_prompt = """आपको उपयोगकर्ता के प्रश्न के आधार पर सबसे प्रासंगिक फ़ाइल नंबरों की पहचान करनी है। 
 केवल निम्नलिखित JSON प्रारूप में प्रासंगिक फ़ाइल नंबरों की सूची वापस करें:
-{"relevant_files": [file_number1, file_number2]}"""
+{"relevant_files": [file_name1, file_name2]}"""
     else:
         system_prompt = """Identify the most relevant file numbers based on the user query.
 Return only a JSON-formatted list of relevant file numbers in this format:
-{"relevant_files": [file_number1, file_number2]}"""
+{"relevant_files": [file_name1, file_name2]}"""
 
     metadata_context = "\n".join(
-        f"File {item['file_number']}: {item['description']}"
+        f"File {item['file_name']}: {item['description']}"
         for item in METADATA['data']
     )
 
@@ -157,12 +162,12 @@ Return only a JSON-formatted list of relevant file numbers in this format:
         print(f"Error in finding relevant files: {e}")
         return []
 
-def fetch_file_details(file_numbers: List[int]) -> List[Dict]:
+def fetch_file_details(file_names: List[int]) -> List[Dict]:
     """
     Fetch file details from MySQL database
     Returns a list of dictionaries with file details
     """
-    if not file_numbers:
+    if not file_names:
         return []
     
     conn = get_mysql_connection()
@@ -173,22 +178,22 @@ def fetch_file_details(file_numbers: List[int]) -> List[Dict]:
         cursor = conn.cursor(dictionary=True)
         
         # Convert file numbers to strings since all columns are text type
-        file_numbers_str = [str(fn) for fn in file_numbers]
-        placeholders = ', '.join(['%s'] * len(file_numbers_str))
+        file_names_str = [str(fn) for fn in file_names]
+        placeholders = ', '.join(['%s'] * len(file_names_str))
         
         query = f"""
-        SELECT file_number, file_name, description 
-        FROM data 
-        WHERE file_number IN ({placeholders})
+        SELECT file_name, page_number, heading, description, eng_description 
+        FROM bipard_pdf 
+        WHERE file_name IN ({placeholders})
         """
         
-        cursor.execute(query, tuple(file_numbers_str))
+        cursor.execute(query, tuple(file_names_str))
         results = cursor.fetchall()
         
         # Convert back to proper types if needed
         for result in results:
             try:
-                result['file_number'] = int(result['file_number'])
+                result['file_name'] = int(result['file_name'])
             except (ValueError, TypeError):
                 pass
                 
@@ -213,7 +218,7 @@ def generate_analytical_response(user_query: str, file_details: List[Dict], lang
             return "Sorry, no information was found related to this query. Please rephrase your question or use different terms."
 
     context = "\n\n".join(
-        f"File Number: {item['file_number']}\nFile Name: {item['file_name']}\nDescription: {item['description']}"
+        f"File Number: {item['file_name']}\nFile Name: {item['file_name']}\nDescription: {item['description']}"
         for item in file_details
     )
 
