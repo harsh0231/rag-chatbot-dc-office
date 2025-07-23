@@ -11,7 +11,6 @@ import json
 from pydantic import BaseModel
 import re
 
-
 # Load environment variables
 load_dotenv()
 
@@ -19,10 +18,8 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 
-
 # Load Gemini model
-gemini_model = genai.GenerativeModel("models/gemini-1.5-pro-latest")  # You can change model here
-
+gemini_model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -49,7 +46,6 @@ def call_gemini_chat(system_prompt: str, user_prompt: str) -> str:
     except Exception as e:
         print(f"Error calling Gemini API: {e}")
         return ""
-
 
 class ChatRequest(BaseModel):
     message: str
@@ -78,6 +74,52 @@ def extract_json_from_response(response_text: str) -> Optional[Dict]:
             return None
         except json.JSONDecodeError:
             return None
+
+def classify_query(user_query: str, language: str = "english") -> str:
+    """
+    Classify the user query as either 'greeting' or 'analytical'
+    Returns 'greeting' or 'analytical'
+    """
+    if language.lower() == "hindi":
+        system_prompt = """उपयोगकर्ता के प्रश्न को वर्गीकृत करें। यदि यह एक सामान्य अभिवादन, परिचय या छोटी बातचीत है, तो 'greeting' लौटाएं।
+अन्यथा, यदि यह एक विश्लेषणात्मक प्रश्न है जिसके लिए डेटाबेस से जानकारी की आवश्यकता है, तो 'analytical' लौटाएं।
+केवल 'greeting' या 'analytical' शब्द वापस करें, कोई अतिरिक्त पाठ नहीं।"""
+    else:
+        system_prompt = """Classify the user query. If it's a general greeting, introduction, or small talk, return 'greeting'.
+Otherwise, if it's an analytical question that requires information from the database, return 'analytical'.
+Return only the word 'greeting' or 'analytical', no additional text."""
+
+    try:
+        response = call_gemini_chat(system_prompt, user_query)
+        return response.lower().strip()
+    except Exception as e:
+        print(f"Error classifying query: {e}")
+        return "analytical"  # Default to analytical if classification fails
+
+def generate_greeting_response(user_query: str, language: str = "english") -> str:
+    """
+    Generate a friendly greeting response based on the user's message
+    """
+    if language.lower() == "hindi":
+        system_prompt = """आप झारखंड सरकार की आधिकारिक सहायक हैं। उपयोगकर्ता के अभिवादन का उत्तर दें।
+उत्तर मित्रवत, पेशेवर और सहायक होना चाहिए, लेकिन संक्षिप्त रखें।
+यदि उपयोगकर्ता आपके बारे में पूछता है, तो बताएं कि आप झारखंड सरकार के लिए एक एआई सहायक हैं जो सरकारी सेवाओं और जानकारी के बारे में मदद करने के लिए हैं।
+किसी भी सामान्य अभिवादन का उत्तर उचित और विनम्र तरीके से दें।"""
+    else:
+        system_prompt = """You are an official assistant for the Government of Jharkhand. Respond to the user's greeting.
+The response should be friendly, professional and helpful, but keep it brief.
+If the user asks about you, explain that you're an AI assistant for the Jharkhand government here to help with government services and information.
+Respond to any general greetings appropriately and politely."""
+
+    try:
+        response = call_gemini_chat(system_prompt, user_query)
+        return response
+    except Exception as e:
+        print(f"Error generating greeting response: {e}")
+        if language.lower() == "hindi":
+            return "नमस्ते! मैं झारखंड सरकार की सहायक हूँ। मैं आपकी कैसे मदद कर सकती हूँ?"
+        else:
+            return "Hello! I'm an assistant for the Jharkhand government. How can I help you today?"
 
 def find_relevant_files(user_query: str, language: str = "english") -> List[int]:
     """
@@ -114,7 +156,6 @@ Return only a JSON-formatted list of relevant file numbers in this format:
     except Exception as e:
         print(f"Error in finding relevant files: {e}")
         return []
-
 
 def fetch_file_details(file_numbers: List[int]) -> List[Dict]:
     """
@@ -161,7 +202,7 @@ def fetch_file_details(file_numbers: List[int]) -> List[Dict]:
             cursor.close()
             conn.close()
 
-def generate_response(user_query: str, file_details: List[Dict], language: str = "english") -> str:
+def generate_analytical_response(user_query: str, file_details: List[Dict], language: str = "english") -> str:
     """
     Generate professional response based on retrieved file details
     """
@@ -203,16 +244,25 @@ async def read_root(request: Request):
 
 @app.post("/chat")
 async def chat(message: str = Form(...), language: str = Form("english")):
-    # Step 1: Find relevant file numbers
-    relevant_files = find_relevant_files(message, language)
-    print(f"Relevant files identified: {relevant_files}")
+    # Step 1: Classify the query
+    query_type = classify_query(message, language)
+    print(f"Query classified as: {query_type}")
     
-    # Step 2: Fetch details for relevant files
-    file_details = fetch_file_details(relevant_files)
-    print(f"Fetched file details: {len(file_details)} items")
-    
-    # Step 3: Generate response based on retrieved files
-    response = generate_response(message, file_details, language)
+    if query_type == "greeting":
+        # Generate a greeting response
+        response = generate_greeting_response(message, language)
+    else:
+        # Handle analytical query
+        # Step 2: Find relevant file numbers
+        relevant_files = find_relevant_files(message, language)
+        print(f"Relevant files identified: {relevant_files}")
+        
+        # Step 3: Fetch details for relevant files
+        file_details = fetch_file_details(relevant_files)
+        print(f"Fetched file details: {len(file_details)} items")
+        
+        # Step 4: Generate response based on retrieved files
+        response = generate_analytical_response(message, file_details, language)
     
     return {"response": response}
 
