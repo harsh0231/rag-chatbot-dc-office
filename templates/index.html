@@ -249,7 +249,7 @@
         /* Messages Area */
         .chat-messages {
             flex: 1;
-            padding: 30px;
+            padding: 30px 30px 120px 30px;
             overflow-y: auto;
             background: linear-gradient(180deg, rgba(248, 250, 252, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%);
             scrollbar-width: thin;
@@ -401,6 +401,46 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
+        /* Formatted text styles for bot responses */
+        .bot-message .message-bubble strong {
+            font-weight: 700;
+            color: var(--primary-orange);
+        }
+
+        .bot-message .message-bubble ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .bot-message .message-bubble li {
+            margin: 4px 0;
+        }
+
+        .bot-message .message-bubble ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .bot-message .message-bubble h1,
+        .bot-message .message-bubble h2,
+        .bot-message .message-bubble h3 {
+            font-weight: 700;
+            margin: 12px 0 8px 0;
+            color: var(--primary-green);
+        }
+
+        .bot-message .message-bubble p {
+            margin: 8px 0;
+        }
+
+        .bot-message .message-bubble code {
+            background: rgba(255, 153, 51, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
         .bot-message .message-bubble::after {
             content: '';
             position: absolute;
@@ -431,25 +471,40 @@
             justify-content: flex-start;
         }
 
+        .user-label {
+            font-weight: 600;
+            color: var(--primary-orange);
+            font-size: 0.8rem;
+        }
+
         .avatar {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
         }
 
         .user-message .avatar {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
 
         .bot-message .avatar {
             background: linear-gradient(135deg, var(--primary-orange), var(--primary-green));
             color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(255, 153, 51, 0.3);
         }
 
         /* Typing Indicator */
@@ -965,20 +1020,60 @@
                 }
             }
             
+            function formatBotText(text) {
+                // Convert markdown-style formatting to HTML
+                let formatted = text
+                    // Convert **bold** to <strong>
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    // Convert *italic* to <em>
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    // Convert ### headers to h3
+                    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                    // Convert ## headers to h2
+                    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                    // Convert # headers to h1
+                    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                    // Convert bullet points (- or *)
+                    .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
+                    // Convert numbered lists (1. 2. etc.)
+                    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+                    // Convert line breaks
+                    .replace(/\n/g, '<br>');
+
+                // Wrap consecutive <li> elements in <ul> or <ol>
+                formatted = formatted.replace(/(<li>.*?<\/li>)(<br>)*(?=<li>|$)/gs, function(match, p1) {
+                    const items = match.match(/<li>.*?<\/li>/g);
+                    if (items) {
+                        return '<ul>' + items.join('') + '</ul>';
+                    }
+                    return match;
+                });
+
+                // Clean up extra <br> tags around lists and headers
+                formatted = formatted
+                    .replace(/<br><ul>/g, '<ul>')
+                    .replace(/<\/ul><br>/g, '</ul>')
+                    .replace(/<br><h([1-6])>/g, '<h$1>')
+                    .replace(/<\/h([1-6])><br>/g, '</h$1>')
+                    .replace(/<br><br>/g, '<br>');
+
+                return formatted;
+            }
+
             function addMessage(text, isUser) {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message', isUser ? 'user-message' : 'bot-message');
                 
                 const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 
-                // Format text with proper line breaks
-                const formattedText = text.replace(/\n/g, '<br>');
+                // Format text appropriately
+                const formattedText = isUser ? text.replace(/\n/g, '<br>') : formatBotText(text);
                 
                 messageDiv.innerHTML = `
                     <div class="message-bubble">${formattedText}</div>
                     <div class="message-info">
                         ${isUser ? 
-                            `<span>You</span><div class="avatar">U</div><span>${currentTime}</span>` : 
+                            `<span class="user-label">You</span><div class="avatar">👤</div><span>${currentTime}</span>` : 
                             `<div class="avatar">🏛️</div><span>Government Assistant</span><span>${currentTime}</span>`
                         }
                     </div>
@@ -995,7 +1090,24 @@
                 clearDiv.className = 'clearfix';
                 chatMessages.appendChild(clearDiv);
 
+                // Auto-scroll to the new message
+                setTimeout(() => {
+                    scrollToLatestMessage();
+                }, 100);
+
                 return messageDiv;
+            }
+
+            function scrollToLatestMessage() {
+                const messages = chatMessages.querySelectorAll('.message');
+                if (messages.length > 0) {
+                    const lastMessage = messages[messages.length - 1];
+                    lastMessage.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'end',
+                        inline: 'nearest'
+                    });
+                }
             }
 
             function addTypingMessage(text, isUser = false) {
@@ -1044,14 +1156,87 @@
                         }
                         i++;
                         
-                        // Auto scroll during typing
-                        autoScrollToBottom();
+                        // Auto scroll during typing every 10 characters
+                        if (i % 10 === 0) {
+                            autoScrollToBottom();
+                        }
                         
                         setTimeout(typeChar, speed);
+                    } else {
+                        // When typing is complete, format the text properly and replace content
+                        const parentBubble = element.closest('.message-bubble');
+                        if (parentBubble) {
+                            parentBubble.innerHTML = formatBotText(text);
+                        }
+                        // Final scroll to ensure full message is visible
+                        setTimeout(() => {
+                            autoScrollToBottom();
+                        }, 100);
                     }
                 }
                 
                 typeChar();
+            }
+
+            function formatBotText(text) {
+                // Convert markdown-style formatting to HTML
+                let formatted = text
+                    // Convert **bold** to <strong>
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    // Convert *italic* to <em>
+                    .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>')
+                    // Convert ### headers to h3
+                    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                    // Convert ## headers to h2
+                    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                    // Convert # headers to h1
+                    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                    // Convert bullet points (- or * at start of line)
+                    .replace(/^[\-\*]\s+(.+)$/gim, '<li>$1</li>')
+                    // Convert numbered lists (1. 2. etc.)
+                    .replace(/^\d+\.\s+(.+)$/gim, '<li>$1</li>');
+
+                // Wrap consecutive <li> elements in <ul>
+                const lines = formatted.split('\n');
+                let result = [];
+                let inList = false;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    
+                    if (line.startsWith('<li>')) {
+                        if (!inList) {
+                            result.push('<ul>');
+                            inList = true;
+                        }
+                        result.push(line);
+                    } else {
+                        if (inList) {
+                            result.push('</ul>');
+                            inList = false;
+                        }
+                        if (line) {
+                            result.push(line);
+                        }
+                    }
+                }
+                
+                if (inList) {
+                    result.push('</ul>');
+                }
+
+                // Join and convert remaining line breaks
+                formatted = result.join('\n').replace(/\n/g, '<br>');
+                
+                // Clean up extra <br> tags around lists and headers
+                formatted = formatted
+                    .replace(/<br><ul>/g, '<ul>')
+                    .replace(/<\/ul><br>/g, '</ul>')
+                    .replace(/<br><h([1-6])>/g, '<h$1>')
+                    .replace(/<\/h([1-6])><br>/g, '</h$1>')
+                    .replace(/<br><br>/g, '<br>');
+
+                return formatted;
             }
 
             function autoScrollToBottom() {
